@@ -1,0 +1,61 @@
+create table account (
+	id uuid DEFAULT uuid_generate_v4 (),
+	username text not null UNIQUE,
+	password text not null,
+	email text not null UNIQUE,
+	created_dt timestamp default now(),
+	primary key (id));
+
+create table message (
+	id uuid DEFAULT uuid_generate_v4 (),
+	from_id uuid not null,
+	to_id uuid not null,
+	message text,
+	created_dt timestamp default now(),
+	primary key (id),
+	foreign key (from_id) references account (id),
+	foreign key (to_id) references account (id));
+	
+create table contact (
+	id uuid DEFAULT uuid_generate_v4 (),
+	parent_id uuid not null,
+	child_id uuid,
+	group_id uuid, 
+	last_read_id uuid,
+	active boolean default true,
+	created_dt timestamp default now(),
+	foreign key (parent_id) references account (id),
+	foreign key (child_id) references account (id),
+	-- foreign key (last_read_id) references message (id)
+);
+
+
+create table group_ (
+	id uuid DEFAULT uuid_generate_v4 (),
+	name text not null,
+	description text,
+	active bool default true,
+	created_dt timestamp default now(),
+	primary key (id));
+);
+
+create table group_account (
+	id uuid DEFAULT uuid_generate_v4 (),
+	group_id uuid not null, 
+	account_id uuid not null,
+	admin bool default false,
+	created_dt timestamp default now(),
+	foreign key (group_id) references group_ (id),
+	foreign key (account_id) references account (id)
+);
+
+create table group_message (
+	id uuid DEFAULT uuid_generate_v4 (),
+	group_id uuid not null, 
+	account_id uuid not null, 
+	message text,
+	created_dt timestamp default now(),
+	foreign key (group_id) references group_ (id),
+	foreign key (account_id) references account (id)
+);
+
